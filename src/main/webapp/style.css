@@ -1,0 +1,16 @@
+table {
+    border: 1px solid #dddddd;
+    border-collapse: collapse;
+}
+
+table th {
+    font-weight: bold;
+    background: #efefef;
+    border: 1px solid #dddddd;
+    padding: 10px;
+}
+
+table td {
+    border: 1px solid #dddddd;
+    padding: 10px;
+}
