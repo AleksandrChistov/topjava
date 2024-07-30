@@ -1,38 +1,48 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<html lang="ru">
+<%@ taglib prefix="fn" uri="http://aleksandrchistov.ru/functions" %>
+<%--<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
+<html>
 <head>
-    <title>Meals</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Meal list</title>
+    <style>
+        .normal {
+            color: green;
+        }
+
+        .excess {
+            color: red;
+        }
+    </style>
 </head>
 <body>
+<section>
     <h3><a href="index.html">Home</a></h3>
-    <hr>
+    <hr/>
     <h2>Meals</h2>
-    <a class="add-btn" href="meals?action=create">Add Meal</a>
-    <table>
+    <table border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
             <th>Date</th>
             <th>Description</th>
             <th>Calories</th>
-            <th colspan="2"></th>
         </tr>
         </thead>
-        <tbody>
-        <jsp:useBean id="meals" scope="request" type="java.util.List<ru.javawebinar.topjava.model.MealTo>"/>
-        <c:forEach var="meal" items="${meals}">
-            <tr style="color: ${meal.excess ? 'red' : 'green'}">
-                <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
-                <td><fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${parsedDateTime}"/></td>
+        <c:forEach items="${requestScope.meals}" var="meal">
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
+            <tr class="${meal.excess ? 'excess' : 'normal'}">
+                <td>
+                        <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
+                        <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
+                        <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
+                        ${fn:formatDateTime(meal.dateTime)}
+                </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
-                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
             </tr>
         </c:forEach>
-        </tbody>
     </table>
+</section>
 </body>
 </html>

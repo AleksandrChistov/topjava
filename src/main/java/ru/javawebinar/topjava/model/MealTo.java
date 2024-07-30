@@ -17,16 +17,6 @@ public class MealTo {
         this.excess = excess;
     }
 
-    @Override
-    public String toString() {
-        return "MealTo{" +
-               "dateTime=" + dateTime +
-               ", description='" + description + '\'' +
-               ", calories=" + calories +
-               ", excess=" + excess +
-               '}';
-    }
-
     public LocalDateTime getDateTime() {
         return dateTime;
     }
@@ -43,7 +33,13 @@ public class MealTo {
         return excess;
     }
 
-    public Integer getId() {
-        return id;
+    @Override
+    public String toString() {
+        return "MealTo{" +
+               "dateTime=" + dateTime +
+               ", description='" + description + '\'' +
+               ", calories=" + calories +
+               ", excess=" + excess +
+               '}';
     }
 }
