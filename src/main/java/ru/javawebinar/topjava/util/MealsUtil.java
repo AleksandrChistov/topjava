@@ -22,23 +22,10 @@ public class MealsUtil {
                 new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         );
 
-        List<MealTo> mealsTo = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        List<MealTo> mealsTo = filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
         mealsTo.forEach(System.out::println);
 
         System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
-    }
-
-    public static List<MealTo> filteredByCycles(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        List<MealTo> mealsTo = new ArrayList<>();
-        Map<LocalDate, Integer> caloriesPerDayMap = new HashMap<>();
-        meals.forEach(meal -> caloriesPerDayMap.merge(meal.getDateTime().toLocalDate(), meal.getCalories(), Integer::sum));
-        meals.forEach(meal -> {
-            if (TimeUtil.isBetweenInclusive(meal.getDateTime().toLocalTime(), startTime, endTime)) {
-                int calories = caloriesPerDayMap.get(meal.getDateTime().toLocalDate());
-                mealsTo.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), calories > caloriesPerDay));
-            }
-        });
-        return mealsTo;
     }
 
     public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -47,7 +34,6 @@ public class MealsUtil {
                                 Meal::getDate,
                                 Collectors.summingInt(Meal::getCalories)
                         )
-//                      Collectors.toMap(Meal::getDate, Meal::getCalories, Integer::sum)
                 );
 
         return meals.stream()
@@ -56,7 +42,7 @@ public class MealsUtil {
                 .collect(Collectors.toList());
     }
 
-    private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+    public static MealTo createTo(Meal meal, boolean excess) {
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }

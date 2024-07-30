@@ -1,0 +1,50 @@
+table {
+    border: 1px solid #dddddd;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th {
+    font-weight: bold;
+    background: #efefef;
+    border: 1px solid #dddddd;
+    padding: 10px;
+}
+
+table td {
+    border: 1px solid #dddddd;
+    padding: 10px;
+}
+
+dt {
+    flex-basis: 30%;
+
+    &::after {
+        content: ': ';
+    }
+}
+
+dd {
+    flex-grow: 1;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form {
+    max-width: 470px;
+}
+
+.btn-wrapper {
+    gap: 10px;
+}
+
+.add-btn {
+    text-decoration: none;
+    border: 1px dashed;
+    border-radius: 5px;
+    padding: 10px;
+}
