@@ -1,6 +1,7 @@
 table {
     border: 1px solid #dddddd;
     border-collapse: collapse;
+    margin-top: 20px;
 }
 
 table th {
@@ -39,4 +40,11 @@ dd {
 
 .btn-wrapper {
     gap: 10px;
+}
+
+.add-btn {
+    text-decoration: none;
+    border: 1px dashed;
+    border-radius: 5px;
+    padding: 10px;
 }

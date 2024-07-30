@@ -1,8 +1,9 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import ru.javawebinar.topjava.dao.InMemoryMealDao;
+import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.InMemoryMealDao;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletException;
@@ -17,9 +18,9 @@ import java.util.ArrayList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealServlet extends HttpServlet {
-    private static final Logger log = getLogger(MealServlet.class);
-    private static final InMemoryMealDao mealDao = new InMemoryMealDao();
     public static final int CALORIES_PER_DAY = 2000;
+    private static final Logger log = getLogger(MealServlet.class);
+    private static final MealDao mealDao = new InMemoryMealDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -63,7 +64,7 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
         if (id == null) {
             Meal meal = new Meal(date, description, calories);
-            mealDao.save(meal);
+            mealDao.create(meal);
         } else {
             Meal meal = new Meal(id, date, description, calories);
             mealDao.update(meal);

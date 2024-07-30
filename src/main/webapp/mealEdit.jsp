@@ -15,7 +15,9 @@
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt>DateTime</dt>
-            <dd><input type="datetime-local" name="dateTime" value="${meal.dateTime}"></dd>
+            <fmt:parseDate value="${meal.dateTime}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
+            <fmt:formatDate var="formatedDateTime" pattern="yyyy-MM-dd HH:mm" value="${parsedDateTime}"/>
+            <dd><input type="datetime-local" name="dateTime" value="${formatedDateTime}"></dd>
         </dl>
         <dl>
             <dt>Description</dt>

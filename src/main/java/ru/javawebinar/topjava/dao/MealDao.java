@@ -1,11 +1,11 @@
-package ru.javawebinar.topjava.interfaces;
+package ru.javawebinar.topjava.dao;
 
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.Collection;
 
 public interface MealDao {
-    Meal save(Meal meal);
+    Meal create(Meal meal);
 
     Meal update(Meal meal);
 
