@@ -13,24 +13,28 @@ public class InMemoryMealDao implements MealDao {
     private final AtomicInteger count = new AtomicInteger(0);
 
     public InMemoryMealDao() {
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        Arrays.asList(
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
+        ).forEach(this::create);
     }
 
     @Override
     public Meal create(Meal meal) {
         Meal newMeal = new Meal(count.incrementAndGet(), meal.getDateTime(), meal.getDescription(), meal.getCalories());
-        return mealsMap.put(newMeal.getId(), newMeal);
+        mealsMap.put(newMeal.getId(), newMeal);
+        return newMeal;
     }
 
     @Override
     public Meal update(Meal meal) {
-        return mealsMap.put(meal.getId(), meal);
+        mealsMap.put(meal.getId(), meal);
+        return meal;
     }
 
     @Override

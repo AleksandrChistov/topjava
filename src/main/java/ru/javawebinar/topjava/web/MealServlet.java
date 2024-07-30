@@ -20,7 +20,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     public static final int CALORIES_PER_DAY = 2000;
     private static final Logger log = getLogger(MealServlet.class);
-    private static final MealDao mealDao = new InMemoryMealDao();
+    private MealDao mealDao;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        mealDao = new InMemoryMealDao();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
