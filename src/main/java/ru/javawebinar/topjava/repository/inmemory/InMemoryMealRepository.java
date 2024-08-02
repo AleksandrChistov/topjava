@@ -17,44 +17,37 @@ import java.util.stream.Collectors;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepository.class);
     private final Map<Integer, Map<Integer, Meal>> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals.forEach(meal -> save(0, meal));
+        MealsUtil.meals.forEach(meal -> save(Math.random() > 0.5 ? 1 : 2, meal));
     }
 
     @Override
-    public Meal save(Integer userId, Meal meal) {
+    public Meal save(int userId, Meal meal) {
         log.info("save {}", meal);
-        Map<Integer, Meal> meals = repository.get(userId);
+        Map<Integer, Meal> meals = repository.computeIfAbsent(userId, k -> new ConcurrentHashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            if (meals == null) {
-                meals = new ConcurrentHashMap<>();
-                repository.put(userId, meals);
-            }
             meals.put(meal.getId(), meal);
             return meal;
-        }
-        if (meals == null) {
-            return null;
         }
         // handle case: update, but not present in storage
         return meals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public boolean delete(Integer userId, int id) {
+    public boolean delete(int userId, int id) {
         return getValueOrNull(userId, meals -> {
             log.info("delete {}", id);
-            return meals.remove(id) != null;
-        });
+            return meals.remove(id);
+        }) != null;
     }
 
     @Override
-    public Meal get(Integer userId, int id) {
+    public Meal get(int userId, int id) {
         return getValueOrNull(userId, meals -> {
             log.info("get {}", id);
             return meals.get(id);
@@ -62,14 +55,14 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getAll(Integer userId) {
+    public List<Meal> getAll(int userId) {
         return getValueOrNull(userId, meals -> {
             log.info("getAll");
             return meals.values().stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(Collectors.toList());
         });
     }
 
-    private <R> R getValueOrNull(Integer userId, Function<Map<Integer, Meal>, R> function) {
+    private <R> R getValueOrNull(int userId, Function<Map<Integer, Meal>, R> function) {
         Map<Integer, Meal> meals = repository.get(userId);
         if (meals == null) {
             return null;

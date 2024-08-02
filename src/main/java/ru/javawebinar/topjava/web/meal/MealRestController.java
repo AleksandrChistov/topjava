@@ -8,8 +8,11 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
@@ -25,15 +28,10 @@ public class MealRestController {
         this.service = service;
     }
 
-    public MealTo create(Meal meal) {
+    public Meal create(Meal meal) {
         log.info("create {}", meal);
         checkNew(meal);
-        Meal createdMeal = service.create(authUserId(), meal);
-        if (createdMeal == null) {
-            return null;
-        }
-        // need to calculate excess
-        return getAll().stream().filter(m -> Objects.equals(m.getId(), meal.getId())).findFirst().get();
+        return service.create(authUserId(), meal);
     }
 
     public void update(Meal meal, int id) {
@@ -47,15 +45,32 @@ public class MealRestController {
         service.delete(authUserId(), id);
     }
 
-    public MealTo get(int id) {
+    public Meal get(int id) {
         log.info("get {}", id);
-        service.get(authUserId(), id); // checkNotFoundWithId
-        // need to calculate excess
-        return getAll().stream().filter(m -> m.getId() == id).findFirst().get();
+        return service.get(authUserId(), id);
     }
 
     public List<MealTo> getAll() {
         log.info("getAll");
         return MealsUtil.getTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public List<MealTo> getFilteredAll(String dateFrom, String dateTo, String timeFrom, String timeTo) {
+        log.info("getFilteredAll");
+        if (dateFrom.isEmpty() && dateTo.isEmpty() && timeFrom.isEmpty() && timeTo.isEmpty()) {
+            return getAll();
+        }
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime ltFrom = timeFrom.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeFrom, tf);
+        LocalTime ltTo = timeTo.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeTo, tf);
+        if (dateFrom.isEmpty() && dateTo.isEmpty() && (!timeFrom.isEmpty() || !timeTo.isEmpty())) {
+            return MealsUtil.getFilteredTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, ltFrom, ltTo);
+        }
+        LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateFrom, df);
+        LocalDate ldTo = dateTo.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateTo, df);
+        LocalDateTime ldtFrom = LocalDateTime.of(ldFrom, ltFrom);
+        LocalDateTime ldtTo = LocalDateTime.of(ldTo, ltTo);
+        return MealsUtil.getFilteredTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, ldtFrom, ldtTo);
     }
 }
