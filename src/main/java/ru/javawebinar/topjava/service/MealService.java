@@ -36,4 +36,8 @@ public class MealService {
     public List<Meal> getAll(int userId) {
         return repository.getAll(userId);
     }
+
+    public List<Meal> getFilteredAll(String dateFrom, String dateTo, String timeFrom, String timeTo, int userId) {
+        return repository.getFilteredAll(dateFrom, dateTo, timeFrom, timeTo, userId);
+    }
 }

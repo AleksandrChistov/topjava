@@ -16,4 +16,6 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getAll(int userId);
+
+    List<Meal> getFilteredAll(String dateFrom, String dateTo, String timeFrom, String timeTo, int userId);
 }
