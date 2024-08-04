@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -22,7 +23,10 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals.forEach(meal -> save(Math.random() > 0.5 ? 1 : 2, meal));
+        int halfMealsSize = MealsUtil.meals.size() / 2;
+        IntStream
+                .range(0, MealsUtil.meals.size())
+                .forEach(index -> save(index <= halfMealsSize ? 1 : 2, MealsUtil.meals.get(index)));
     }
 
     @Override

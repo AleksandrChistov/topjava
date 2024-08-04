@@ -16,14 +16,18 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-
     private MealRestController restController;
 
     @Override
     public void init() {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         restController = context.getBean(MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        context.close();
     }
 
     @Override
@@ -72,6 +76,10 @@ public class MealServlet extends HttpServlet {
                 String dateTo = request.getParameter("dateTo");
                 String timeFrom = request.getParameter("timeFrom");
                 String timeTo = request.getParameter("timeTo");
+                request.setAttribute("dateFrom", dateFrom);
+                request.setAttribute("dateTo", dateTo);
+                request.setAttribute("timeFrom", timeFrom);
+                request.setAttribute("timeTo", timeTo);
                 request.setAttribute("meals", restController.getFilteredAll(dateFrom, dateTo, timeFrom, timeTo));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;

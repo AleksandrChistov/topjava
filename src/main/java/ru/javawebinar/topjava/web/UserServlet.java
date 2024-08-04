@@ -15,7 +15,6 @@ public class UserServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
         String strId = request.getParameter("userId");
         log.info("Toggle {}", strId);
         SecurityUtil.setAuthUserId(Integer.parseInt(strId));

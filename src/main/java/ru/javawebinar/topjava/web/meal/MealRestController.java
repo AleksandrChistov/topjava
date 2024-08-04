@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -69,8 +68,6 @@ public class MealRestController {
         }
         LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateFrom, df);
         LocalDate ldTo = dateTo.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateTo, df);
-        LocalDateTime ldtFrom = LocalDateTime.of(ldFrom, ltFrom);
-        LocalDateTime ldtTo = LocalDateTime.of(ldTo, ltTo);
-        return MealsUtil.getFilteredTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, ldtFrom, ldtTo);
+        return MealsUtil.getFilteredTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY, ldFrom, ldTo, ltFrom, ltTo);
     }
 }

@@ -7,8 +7,9 @@
 <h3>Проект <a href="https://github.com/AleksandrChistov/topjava" target="_blank">Java Enterprise (Topjava)</a></h3>
 <hr>
 <form method="post" action="users">
-    <select name="userId">
-        <option value="1" selected>User</option>
+    <select name="userId" required>
+        <option value="">-- Select Role --</option>
+        <option value="1">User</option>
         <option value="2">Admin</option>
     </select>
     <button type="submit">Select</button>
