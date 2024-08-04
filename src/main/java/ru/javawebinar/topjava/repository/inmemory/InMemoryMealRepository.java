@@ -7,10 +7,11 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -28,10 +28,15 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        int halfMealsSize = MealsUtil.meals.size() / 2;
-        IntStream
-                .range(0, MealsUtil.meals.size())
-                .forEach(index -> save(index <= halfMealsSize ? 1 : 2, MealsUtil.meals.get(index)));
+        MealsUtil.meals.forEach(meal -> save(SecurityUtil.USER_ID, meal));
+        save(
+                SecurityUtil.ADMIN_ID,
+                new Meal(LocalDateTime.of(2020, Month.FEBRUARY, 1, 12, 45), "Обед", 500)
+        );
+        save(
+                SecurityUtil.ADMIN_ID,
+                new Meal(LocalDateTime.of(2020, Month.FEBRUARY, 1, 19, 0), "Ужин", 410)
+        );
     }
 
     @Override
@@ -66,25 +71,11 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<Meal> getFilteredAll(String dateFrom, String dateTo, String timeFrom, String timeTo, int userId) {
+    public List<Meal> getFiltered(LocalDate dateFrom, LocalDate dateTo, int userId) {
         log.info("getFilteredAll");
-        return getValueOrNull(userId, meals -> {
-            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime ltFrom = timeFrom.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeFrom, tf);
-            LocalTime ltTo = timeTo.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeTo, tf);
-            if (dateFrom.isEmpty() && dateTo.isEmpty() && (!timeFrom.isEmpty() || !timeTo.isEmpty())) {
-                return filterByPredicate(meals, meal ->
-                                DateTimeUtil.isBetweenHalfOpen(meal.getTime(), ltFrom, ltTo)
-                );
-            }
-            LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateFrom, df);
-            LocalDate ldTo = dateTo.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateTo, df);
-            return filterByPredicate(meals, meal ->
-                    DateTimeUtil.isBetweenHalfOpen(meal.getDate(), ldFrom, ldTo) &&
-                    DateTimeUtil.isBetweenHalfOpen(meal.getTime(), ltFrom, ltTo)
-            );
-        });
+        return getValueOrNull(userId, meals -> filterByPredicate(meals, meal ->
+                DateTimeUtil.isBetweenHalfOpen(meal.getDate(), dateFrom, dateTo.plusDays(1))
+        ));
     }
 
     private <R> R getValueOrNull(int userId, Function<Map<Integer, Meal>, R> function) {

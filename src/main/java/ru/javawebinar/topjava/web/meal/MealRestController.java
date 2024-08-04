@@ -8,6 +8,10 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -56,10 +60,25 @@ public class MealRestController {
         if (dateFrom.isEmpty() && dateTo.isEmpty() && timeFrom.isEmpty() && timeTo.isEmpty()) {
             return getAll();
         }
-        return MealsUtil.filterByPredicate(
-                service.getFilteredAll(dateFrom, dateTo, timeFrom, timeTo, authUserId()),
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime ltFrom = timeFrom.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeFrom, tf);
+        LocalTime ltTo = timeTo.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeTo, tf);
+        if (dateFrom.isEmpty() && dateTo.isEmpty() && (!timeFrom.isEmpty() || !timeTo.isEmpty())) {
+            return MealsUtil.getFilteredTos(
+                    service.getAll(authUserId()),
+                    MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                    ltFrom,
+                    ltTo
+            );
+        }
+        LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.of(1000, Month.JANUARY, 1) : LocalDate.parse(dateFrom, df);
+        LocalDate ldTo = dateTo.isEmpty() ? LocalDate.of(3000, Month.JANUARY, 1) : LocalDate.parse(dateTo, df);
+        return MealsUtil.getFilteredTos(
+                service.getFilteredByDate(ldFrom, ldTo, authUserId()),
                 MealsUtil.DEFAULT_CALORIES_PER_DAY,
-                meal -> true
+                ltFrom,
+                ltTo
         );
     }
 }
