@@ -11,7 +11,6 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -20,7 +19,7 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Controller
 public class MealRestController {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final MealService service;
 
@@ -52,33 +51,27 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return MealsUtil.getTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return getTos();
     }
 
     public List<MealTo> getFilteredAll(String dateFrom, String dateTo, String timeFrom, String timeTo) {
         log.info("getFilteredAll");
         if (dateFrom.isEmpty() && dateTo.isEmpty() && timeFrom.isEmpty() && timeTo.isEmpty()) {
-            return getAll();
+            return getTos();
         }
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter tf = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime ltFrom = timeFrom.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeFrom, tf);
-        LocalTime ltTo = timeTo.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeTo, tf);
-        if (dateFrom.isEmpty() && dateTo.isEmpty() && (!timeFrom.isEmpty() || !timeTo.isEmpty())) {
-            return MealsUtil.getFilteredTos(
-                    service.getAll(authUserId()),
-                    MealsUtil.DEFAULT_CALORIES_PER_DAY,
-                    ltFrom,
-                    ltTo
-            );
-        }
-        LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.of(1000, Month.JANUARY, 1) : LocalDate.parse(dateFrom, df);
-        LocalDate ldTo = dateTo.isEmpty() ? LocalDate.of(3000, Month.JANUARY, 1) : LocalDate.parse(dateTo, df);
+        LocalTime ltFrom = timeFrom.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeFrom);
+        LocalTime ltTo = timeTo.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeTo);
+        LocalDate ldFrom = dateFrom.isEmpty() ? LocalDate.of(1000, Month.JANUARY, 1) : LocalDate.parse(dateFrom);
+        LocalDate ldTo = dateTo.isEmpty() ? LocalDate.of(3000, Month.JANUARY, 1) : LocalDate.parse(dateTo);
         return MealsUtil.getFilteredTos(
                 service.getFilteredByDate(ldFrom, ldTo, authUserId()),
                 MealsUtil.DEFAULT_CALORIES_PER_DAY,
                 ltFrom,
                 ltTo
         );
+    }
+
+    private List<MealTo> getTos() {
+        return MealsUtil.getTos(service.getAll(authUserId()), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 }
