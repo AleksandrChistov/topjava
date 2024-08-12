@@ -6,10 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
@@ -32,7 +30,7 @@ public class JpaMealRepository implements MealRepository {
             return meal;
         } else {
             Meal dbMeal = em.find(Meal.class, meal.getId());
-            if (dbMeal.getUser().getId() == userId) {
+            if (dbMeal != null && dbMeal.getUser().getId() == userId) {
                 meal.setUser(dbMeal.getUser());
                 return em.merge(meal);
             }
@@ -54,11 +52,7 @@ public class JpaMealRepository implements MealRepository {
         TypedQuery<Meal> query = em.createNamedQuery(Meal.GET, Meal.class)
                 .setParameter("id", id)
                 .setParameter("user_id", userId);
-        try {
-            return DataAccessUtils.singleResult(query.getResultList());
-        } catch (NoResultException e) {
-            throw new NotFoundException(e.getMessage());
-        }
+        return DataAccessUtils.singleResult(query.getResultList());
     }
 
     @Override
