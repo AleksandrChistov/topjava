@@ -72,6 +72,11 @@ public abstract class AbstractJdbcMealRepository<T> implements MealRepository {
     }
 
     @Override
+    public Meal getWithUser(int id, int userId) {
+        throw new UnsupportedOperationException("Method does not implemented");
+    }
+
+    @Override
     public List<Meal> getAll(int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meal WHERE user_id=? ORDER BY date_time DESC", ROW_MAPPER, userId);

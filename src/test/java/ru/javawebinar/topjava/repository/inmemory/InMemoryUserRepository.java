@@ -30,6 +30,11 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
     }
 
     @Override
+    public User getWithMeals(int id) {
+        throw new UnsupportedOperationException("Method does not implemented");
+    }
+
+    @Override
     public User getByEmail(String email) {
         Objects.requireNonNull(email, "email must not be null");
         return getCollection().stream()

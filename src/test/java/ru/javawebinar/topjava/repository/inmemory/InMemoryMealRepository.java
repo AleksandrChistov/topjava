@@ -60,6 +60,11 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
+    public Meal getWithUser(int id, int userId) {
+        throw new UnsupportedOperationException("Method does not implemented");
+    }
+
+    @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return filterByPredicate(userId, meal -> Util.isBetweenHalfOpen(meal.getDateTime(), startDateTime, endDateTime));
     }
