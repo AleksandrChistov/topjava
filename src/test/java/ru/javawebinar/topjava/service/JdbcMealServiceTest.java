@@ -3,6 +3,6 @@ package ru.javawebinar.topjava.service;
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
 
-@ActiveProfiles(Profiles.DATAJPA)
-public class DataJpaAbstractUserServiceTest extends AbstractUserServiceTest {
+@ActiveProfiles(Profiles.JDBC)
+public class JdbcMealServiceTest extends AbstractMealServiceTest {
 }
