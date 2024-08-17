@@ -45,11 +45,6 @@ public class JpaMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal getWithUser(int id, int userId) {
-        throw  new UnsupportedOperationException("Method does not implemented");
-    }
-
-    @Override
     public List<Meal> getAll(int userId) {
         return em.createNamedQuery(Meal.ALL_SORTED, Meal.class)
                 .setParameter("userId", userId)
