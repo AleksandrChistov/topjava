@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -13,8 +14,6 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.ValidationUtil;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Repository
@@ -77,18 +76,14 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public User get(int id) {
-        String sql = "SELECT u.*, ur.role FROM users u " +
-                     "LEFT JOIN user_role ur ON u.id = ur.user_id " +
-                     "WHERE u.id = ?";
-        return jdbcTemplate.query(sql, this::getFromResultSet, id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
+        return setRoles(DataAccessUtils.singleResult(users));
     }
 
     @Override
     public User getByEmail(String email) {
-        String sql = "SELECT u.*, ur.role FROM users u " +
-                     "LEFT JOIN user_role ur ON u.id = ur.user_id " +
-                     "WHERE email = ?";
-        return jdbcTemplate.query(sql, this::getFromResultSet, email);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
+        return setRoles(DataAccessUtils.singleResult(users));
     }
 
     @Override
@@ -103,25 +98,13 @@ public class JdbcUserRepository implements UserRepository {
         return users;
     }
 
-    private User getFromResultSet(ResultSet rs) throws SQLException {
-        User user = null;
-        Set<Role> roles = new HashSet<>();
-        while (rs.next()) {
-            if (user == null) {
-                user = new User(
-                        rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getInt("calories_per_day"),
-                        rs.getBoolean("enabled"),
-                        rs.getDate("registered"),
-                        Collections.emptyList()
-                );
-            }
-            roles.add(Role.valueOf(rs.getString("role")));
-        }
+    private User setRoles(User user) {
         if (user != null) {
+            List<Role> roles = jdbcTemplate.queryForList(
+                    "SELECT role FROM user_role  WHERE user_id=?",
+                    Role.class,
+                    user.getId()
+            );
             user.setRoles(roles);
         }
         return user;
