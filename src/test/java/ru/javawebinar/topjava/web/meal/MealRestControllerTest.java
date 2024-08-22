@@ -7,7 +7,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
@@ -15,7 +14,6 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -90,12 +88,12 @@ class MealRestControllerTest extends AbstractControllerTest {
     void getBetween() throws Exception {
         LocalDate startDate = LocalDate.of(2020, Month.JANUARY, 30);
         LocalTime startTime = LocalTime.of(0, 0);
-        LocalDate endDate = LocalDate.of(2020, Month.JANUARY, 30);
-        LocalTime endTime = LocalTime.of(23, 59);
+        LocalDate endDate = LocalDate.of(2020, Month.JANUARY, 31);
+        LocalTime endTime = LocalTime.of(10, 1);
         perform(MockMvcRequestBuilders.get(REST_URL + "filter?startDate=" + startDate +
                                            "&startTime=" + startTime + "&endDate=" + endDate + "&endTime=" + endTime))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MEAL_TO_MATCHER.contentJson(getTos(List.of(meal3, meal2, meal1), MealsUtil.DEFAULT_CALORIES_PER_DAY)));
+                .andExpect(MEAL_TO_MATCHER.contentJson(mealsTo.get(2), mealsTo.get(3), mealsTo.get(6)));
     }
 }
