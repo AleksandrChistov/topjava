@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.to;
 
+import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
 public class MealTo {
@@ -9,6 +10,7 @@ public class MealTo {
     private final int calories;
     private final boolean excess;
 
+    @ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
     public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         this.id = id;
         this.dateTime = dateTime;

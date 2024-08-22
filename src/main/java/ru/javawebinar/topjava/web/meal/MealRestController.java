@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,10 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.web.SecurityUtil;
+import ru.javawebinar.topjava.to.MealTo;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -54,18 +54,20 @@ public class MealRestController extends AbstractMealController {
         super.update(meal, id);
     }
 
+    @Override
     @GetMapping
-    public List<Meal> getAlls() {
-        int userId = SecurityUtil.authUserId();
-        return mealService.getAll(userId);
+    public List<MealTo> getAll() {
+        return super.getAll();
     }
 
+    @Override
     @GetMapping("/filter")
-    public List<Meal> getBetweenInclusive(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime
+    public List<MealTo> getBetween(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalTime startTime,
+            @RequestParam LocalDate endDate,
+            @RequestParam LocalTime endTime
     ) {
-        int userId = SecurityUtil.authUserId();
-        return mealService.getBetweenInclusive(startDateTime.toLocalDate(), endDateTime.toLocalDate(), userId);
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 }
