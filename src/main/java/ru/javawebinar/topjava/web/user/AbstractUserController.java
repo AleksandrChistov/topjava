@@ -33,6 +33,11 @@ public abstract class AbstractUserController {
         return service.create(user);
     }
 
+    public void toggleStatus(int id, boolean enabled) {
+        log.info("toggleStatus {}", enabled);
+        service.toggleStatus(id, enabled);
+    }
+
     public void delete(int id) {
         log.info("delete {}", id);
         service.delete(id);

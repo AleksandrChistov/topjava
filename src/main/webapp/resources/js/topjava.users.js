@@ -45,3 +45,14 @@ $(function () {
         })
     );
 });
+
+function toggleStatus(id, input) {
+    $.ajax({
+        type: "POST",
+        url: ctx.ajaxUrl + `${id}`,
+        data: {enabled: input.checked}
+    }).done(function () {
+        $(input).parents("tr").toggleClass("text-disabled");
+        successNoty("Changed");
+    });
+}
