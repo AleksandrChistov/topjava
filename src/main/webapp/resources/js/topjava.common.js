@@ -56,6 +56,12 @@ function filter() {
     });
 }
 
+function clean() {
+    $('#filterForm').find("input").each(function(i, input) {
+        input.value = "";
+    });
+}
+
 let failedNote;
 
 function closeNoty() {

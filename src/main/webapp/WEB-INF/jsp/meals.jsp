@@ -34,6 +34,10 @@
                 <span class="fa fa-filter"></span>
                 <spring:message code="meal.filter"/>
             </button>
+            <button type="button" class="btn btn-secondary" onclick="clean()">
+                <span class="fa fa-clear"></span>
+                <spring:message code="meal.clear"/>
+            </button>
         </form>
         <hr>
         <button class="btn btn-primary" onclick="add()">
