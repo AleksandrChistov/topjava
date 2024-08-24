@@ -34,7 +34,7 @@ public abstract class AbstractUserController {
     }
 
     public void toggleStatus(int id, boolean enabled) {
-        log.info("toggleStatus {}", enabled);
+        log.info("toggleStatus {}, {}", id, enabled);
         service.toggleStatus(id, enabled);
     }
 

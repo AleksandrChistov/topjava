@@ -4,9 +4,7 @@ const userAjaxUrl = "admin/users/";
 const ctx = {
     ajaxUrl: userAjaxUrl,
     updateTable: function updateTable() {
-        $.get(ctx.ajaxUrl, function (data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
-        });
+        $.get(ctx.ajaxUrl, updateTableByData);
     }
 };
 

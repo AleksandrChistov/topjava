@@ -40,10 +40,7 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
 
     @Override
     public boolean toggleStatus(int id, boolean enabled) {
-        User user = getCollection().stream()
-                .filter(u -> id == u.getId())
-                .findFirst()
-                .orElse(null);
+        User user = get(id);
         if (user == null) {
             return false;
         }

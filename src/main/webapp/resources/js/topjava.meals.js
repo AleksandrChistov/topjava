@@ -4,9 +4,7 @@ const mealAjaxUrl = "meals/";
 const ctx = {
     ajaxUrl: mealAjaxUrl,
     updateTable: function updateTable() {
-        $.get(ctx.ajaxUrl + "filter?" + $('#filterForm').serialize(), function(data) {
-            ctx.datatableApi.clear().rows.add(data).draw();
-        });
+        $.get(ctx.ajaxUrl + "filter?" + $('#filterForm').serialize(), updateTableByData);
     }
 };
 
@@ -49,8 +47,6 @@ function filter() {
 }
 
 function clean() {
-    $('#filterForm').find("input").each(function(i, input) {
-        input.value = "";
-    });
-    ctx.updateTable();
+    $('#filterForm')[0].reset();
+    $.get(ctx.ajaxUrl, updateTableByData);
 }

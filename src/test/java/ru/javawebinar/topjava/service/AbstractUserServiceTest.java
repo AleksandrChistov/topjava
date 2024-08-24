@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -33,8 +32,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     void toggleStatus() {
+        User newUser = new User(user);
+        newUser.setEnabled(false);
         service.toggleStatus(USER_ID, false);
-        assertThat(service.get(USER_ID).isEnabled()).isEqualTo(false);
+        USER_MATCHER.assertMatch(service.get(USER_ID), newUser);
+        assertThrows(NotFoundException.class, () -> service.toggleStatus(NOT_FOUND, false));
     }
 
     @Test
