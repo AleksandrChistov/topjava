@@ -48,5 +48,11 @@ function filter() {
 
 function clean() {
     $('#filterForm')[0].reset();
-    $.get(ctx.ajaxUrl, updateTableByData);
+    $.ajax({
+        url: ctx.ajaxUrl,
+        type: "GET",
+        headers: {
+            Accept: "application/json; charset=utf-8"
+        },
+    }).done(updateTableByData);
 }

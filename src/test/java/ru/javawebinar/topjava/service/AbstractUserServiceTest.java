@@ -32,10 +32,14 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     void toggleStatus() {
-        User newUser = new User(user);
-        newUser.setEnabled(false);
+        User expected = new User(user);
+        expected.setEnabled(false);
         service.toggleStatus(USER_ID, false);
-        USER_MATCHER.assertMatch(service.get(USER_ID), newUser);
+        USER_MATCHER.assertMatch(service.get(USER_ID), expected);
+    }
+
+    @Test
+    void toggleStatusNotFound() {
         assertThrows(NotFoundException.class, () -> service.toggleStatus(NOT_FOUND, false));
     }
 

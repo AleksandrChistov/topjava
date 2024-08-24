@@ -18,7 +18,7 @@ import java.util.List;
 public class MealUIController extends AbstractMealController {
 
     @Override
-    @GetMapping("/")
+    @GetMapping
     public List<MealTo> getAll() {
         return super.getAll();
     }
