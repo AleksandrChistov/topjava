@@ -23,8 +23,8 @@ public class DataJpaUserRepository implements UserRepository {
     }
 
     @Override
-    public void toggleStatus(int id, boolean enabled) {
-        crudRepository.toggleStatus(id, enabled);
+    public boolean toggleStatus(int id, boolean enabled) {
+        return crudRepository.toggleStatus(id, enabled) != 0;
     }
 
     @Override

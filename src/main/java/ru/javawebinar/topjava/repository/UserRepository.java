@@ -8,9 +8,7 @@ public interface UserRepository {
     // null if not found, when updated
     User save(User user);
 
-    default void toggleStatus(int id, boolean enabled) {
-        throw new UnsupportedOperationException();
-    }
+    boolean toggleStatus(int id, boolean enabled);
 
     // false if not found
     boolean delete(int id);

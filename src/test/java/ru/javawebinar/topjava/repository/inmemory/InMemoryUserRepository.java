@@ -37,4 +37,17 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
                 .findFirst()
                 .orElse(null);
     }
+
+    @Override
+    public boolean toggleStatus(int id, boolean enabled) {
+        User user = getCollection().stream()
+                .filter(u -> id == u.getId())
+                .findFirst()
+                .orElse(null);
+        if (user == null) {
+            return false;
+        }
+        user.setEnabled(enabled);
+        return true;
+    }
 }

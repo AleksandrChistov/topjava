@@ -2,7 +2,12 @@ const mealAjaxUrl = "meals/";
 
 // https://stackoverflow.com/a/5064235/548473
 const ctx = {
-    ajaxUrl: mealAjaxUrl
+    ajaxUrl: mealAjaxUrl,
+    updateTable: function updateTable() {
+        $.get(ctx.ajaxUrl + "filter?" + $('#filterForm').serialize(), function(data) {
+            ctx.datatableApi.clear().rows.add(data).draw();
+        });
+    }
 };
 
 $(function () {
@@ -32,9 +37,20 @@ $(function () {
             "order": [
                 [
                     0,
-                    "asc"
+                    "desc"
                 ]
             ]
         })
     );
 });
+
+function filter() {
+    ctx.updateTable();
+}
+
+function clean() {
+    $('#filterForm').find("input").each(function(i, input) {
+        input.value = "";
+    });
+    ctx.updateTable();
+}

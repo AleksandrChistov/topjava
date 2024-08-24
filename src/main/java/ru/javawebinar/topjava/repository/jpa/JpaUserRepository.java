@@ -39,6 +39,17 @@ public class JpaUserRepository implements UserRepository {
     }
 
     @Override
+    @Transactional
+    public boolean toggleStatus(int id, boolean enabled) {
+        User user = em.getReference(User.class, id);
+        if (user == null) {
+            return false;
+        }
+        user.setEnabled(enabled);
+        return em.merge(user) != null;
+    }
+
+    @Override
     public User get(int id) {
         return em.find(User.class, id);
     }

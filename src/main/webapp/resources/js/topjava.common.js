@@ -27,14 +27,8 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        ctx.updateTable();
         successNoty("Deleted");
-    });
-}
-
-function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
     });
 }
 
@@ -45,20 +39,8 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        ctx.updateTable();
         successNoty("Saved");
-    });
-}
-
-function filter() {
-    $.get(ctx.ajaxUrl + "filter?" + $('#filterForm').serialize(), function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
-}
-
-function clean() {
-    $('#filterForm').find("input").each(function(i, input) {
-        input.value = "";
     });
 }
 

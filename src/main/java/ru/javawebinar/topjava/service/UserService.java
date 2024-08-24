@@ -29,7 +29,7 @@ public class UserService {
 
     @CacheEvict(value = "users", allEntries = true)
     public void toggleStatus(int id, boolean enabled) {
-        repository.toggleStatus(id, enabled);
+        checkNotFoundWithId(repository.toggleStatus(id, enabled), id);
     }
 
     @CacheEvict(value = "users", allEntries = true)

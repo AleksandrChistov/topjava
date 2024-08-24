@@ -68,6 +68,12 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     @Transactional
+    public boolean toggleStatus(int id, boolean enabled) {
+        return jdbcTemplate.update("UPDATE users SET enabled=? WHERE id=?", enabled, id) != 0;
+    }
+
+    @Override
+    @Transactional
     public boolean delete(int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }

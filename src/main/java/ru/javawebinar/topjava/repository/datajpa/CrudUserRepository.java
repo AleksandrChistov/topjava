@@ -17,7 +17,7 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Modifying
     @Query("UPDATE User SET enabled=:enabled WHERE id=:id")
-    void toggleStatus(@Param("id") int id, @Param("enabled") boolean enabled);
+    int toggleStatus(@Param("id") int id, @Param("enabled") boolean enabled);
 
     //  https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#hql-distinct
     @QueryHints({
