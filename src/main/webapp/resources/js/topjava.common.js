@@ -23,7 +23,7 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            form.find("input[name='" + key + "']").val(value);
+            form.find("input[name='" + key + "']").val(key === "dateTime" ? fromIsoToDateTime(value) : value);
         });
         $('#editRow').modal();
     });
@@ -96,4 +96,20 @@ function failNoty(jqXHR) {
         layout: "bottomRight"
     });
     failedNote.show()
+}
+
+function initDatePicker(id) {
+    $(`#${id}`).datetimepicker({ timepicker: false, format: "Y-m-d" });
+}
+
+function initTimePicker(id) {
+    $(`#${id}`).datetimepicker({ datepicker: false, format: "H:i" });
+}
+
+function initDateTimePicker(id) {
+    $(`#${id}`).datetimepicker({format: "Y-m-d H:i"});
+}
+
+function fromIsoToDateTime(str) {
+    return str.replace("T", " ").replace(/:\d+$/, "");
 }
