@@ -76,14 +76,14 @@ public class ValidationUtil {
         return rootCause != null ? rootCause : t;
     }
 
-    public static ResponseEntity<String> getResponseEntityString(BindingResult result, Caller caller) {
+    public static ResponseEntity<String> getResponseEntityString(BindingResult result, Runnable runnable) {
         if (result.hasErrors()) {
             String errorFieldsMsg = result.getFieldErrors().stream()
                     .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                     .collect(Collectors.joining("<br>"));
             return ResponseEntity.unprocessableEntity().body(errorFieldsMsg);
         }
-        caller.call();
+        runnable.run();
         return ResponseEntity.ok().build();
     }
 }
