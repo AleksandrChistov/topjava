@@ -98,16 +98,12 @@ function failNoty(jqXHR) {
     failedNote.show()
 }
 
-function initDatePicker(id) {
-    $(`#${id}`).datetimepicker({ timepicker: false, format: "Y-m-d" });
+function getDatePickerOptions(id) {
+    return { timepicker: false, format: "Y-m-d" };
 }
 
-function initTimePicker(id) {
-    $(`#${id}`).datetimepicker({ datepicker: false, format: "H:i" });
-}
-
-function initDateTimePicker(id) {
-    $(`#${id}`).datetimepicker({format: "Y-m-d H:i"});
+function getTimePickerOptions(id) {
+    return { datepicker: false, format: "H:i" };
 }
 
 function fromIsoToDateTime(str) {

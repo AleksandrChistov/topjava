@@ -17,6 +17,42 @@ function clearFilter() {
     $.get(mealAjaxUrl, updateTableByData);
 }
 
+function initDateTime() {
+    $("#startDate").datetimepicker({
+        ...getDatePickerOptions(),
+        onShow: function( ct ){
+            this.setOptions({
+                maxDate:$('#endDate').val()?$('#endDate').val():false
+            })
+        }
+    });
+    $("#endDate").datetimepicker({
+        ...getDatePickerOptions(),
+        onShow: function( ct ){
+            this.setOptions({
+                minDate:$('#startDate').val()?$('#startDate').val():false
+            })
+        }
+    });
+    $("#startTime").datetimepicker({
+        ...getTimePickerOptions(),
+        onShow: function( ct ){
+            this.setOptions({
+                maxTime:$('#endTime').val()?$('#endTime').val():false
+            })
+        }
+    });
+    $("#endTime").datetimepicker({
+        ...getTimePickerOptions(),
+        onShow: function( ct ){
+            this.setOptions({
+                minTime:$('#startTime').val()?$('#startTime').val():false
+            })
+        }
+    });
+    $("#dateTime").datetimepicker({format: "Y-m-d H:i"});
+}
+
 $(function () {
     makeEditable(
         $("#datatable").DataTable({
@@ -64,9 +100,5 @@ $(function () {
             }
         })
     );
-    initDatePicker("startDate");
-    initDatePicker("endDate");
-    initTimePicker("startTime");
-    initTimePicker("endTime");
-    initDateTimePicker("dateTime");
+    initDateTime();
 });
