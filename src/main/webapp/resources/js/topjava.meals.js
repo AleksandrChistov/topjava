@@ -34,7 +34,7 @@ $(function () {
     makeEditable({
         "columns": [
             {
-                "data": "dateTime"
+                "data": "dateTimeUI"
             },
             {
                 "data": "description"
