@@ -12,6 +12,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.function.Consumer;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -81,6 +83,30 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateWithException() throws Exception {
+        Consumer<Meal> consumer = meal -> {
+            try {
+                perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(userHttpBasic(user))
+                        .content(JsonUtil.writeValue(meal)))
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Meal updated = getUpdated();
+        updated.setDescription("А");
+        consumer.accept(updated);
+        Meal updated2 = getUpdated();
+        updated2.setCalories(9);
+        consumer.accept(updated2);
+        Meal updated3 = getUpdated();
+        updated3.setDateTime(null);
+        consumer.accept(updated3);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -94,6 +120,30 @@ class MealRestControllerTest extends AbstractControllerTest {
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
+    }
+
+    @Test
+    void createWithLocationWithException() throws Exception {
+        Consumer<Meal> consumer = meal -> {
+            try {
+                perform(MockMvcRequestBuilders.post(REST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(userHttpBasic(user))
+                        .content(JsonUtil.writeValue(meal)))
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Meal newMeal = getNew();
+        newMeal.setDescription("А");
+        consumer.accept(newMeal);
+        Meal newMeal2 = getNew();
+        newMeal2.setCalories(9);
+        consumer.accept(newMeal2);
+        Meal newMeal3 = getNew();
+        newMeal3.setDateTime(null);
+        consumer.accept(newMeal3);
     }
 
     @Test

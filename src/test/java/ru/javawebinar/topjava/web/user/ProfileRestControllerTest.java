@@ -12,6 +12,8 @@ import ru.javawebinar.topjava.util.UsersUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import java.util.function.Consumer;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,6 +67,29 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void registerWithException() throws Exception {
+        Consumer<UserTo> consumer = userTo -> {
+            try {
+                perform(MockMvcRequestBuilders.post(REST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonUtil.writeValue(userTo)))
+                        .andDo(print())
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        UserTo newTo = new UserTo(null, "n", "newemail@ya.ru", "newPassword", 1500);
+        consumer.accept(newTo);
+        UserTo newTo2 = new UserTo(null, "newName", "newemail_ya.ru", "newPassword", 1500);
+        consumer.accept(newTo2);
+        UserTo newTo3 = new UserTo(null, "newName", "newemail@ya.ru", "newP", 1500);
+        consumer.accept(newTo3);
+        UserTo newTo4 = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 10001);
+        consumer.accept(newTo4);
+    }
+
+    @Test
     void update() throws Exception {
         UserTo updatedTo = new UserTo(null, "newName", "user@yandex.ru", "newPassword", 1500);
         perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
@@ -74,6 +99,30 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), UsersUtil.updateFromTo(new User(user), updatedTo));
+    }
+
+    @Test
+    void updateWithException() throws Exception {
+        Consumer<UserTo> consumer = userTo -> {
+            try {
+                perform(MockMvcRequestBuilders.put(REST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(userHttpBasic(user))
+                        .content(JsonUtil.writeValue(userTo)))
+                        .andDo(print())
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        UserTo updatedTo = new UserTo(null, "n", "newemail@ya.ru", "newPassword", 1500);
+        consumer.accept(updatedTo);
+        UserTo updatedTo2 = new UserTo(null, "newName", "newemail_ya.ru", "newPassword", 1500);
+        consumer.accept(updatedTo2);
+        UserTo updatedTo3 = new UserTo(null, "newName", "newemail@ya.ru", "newP", 1500);
+        consumer.accept(updatedTo3);
+        UserTo updatedTo4 = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 10001);
+        consumer.accept(updatedTo4);
     }
 
     @Test

@@ -5,11 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -97,6 +98,27 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateWithException() throws Exception {
+        Consumer<User> consumer = user -> {
+            try {
+                perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(userHttpBasic(admin))
+                        .content(jsonWithPassword(user, user.getPassword())))
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        User updated = getUpdated();
+        updated.setCaloriesPerDay(9);
+        consumer.accept(updated);
+        User updated2 = getUpdated();
+        updated2.setEmail("test_failed_email.ru");
+        consumer.accept(updated2);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -110,6 +132,27 @@ class AdminRestControllerTest extends AbstractControllerTest {
         newUser.setId(newId);
         USER_MATCHER.assertMatch(created, newUser);
         USER_MATCHER.assertMatch(userService.get(newId), newUser);
+    }
+
+    @Test
+    void createWithLocationWithException() throws Exception {
+        Consumer<User> consumer = user -> {
+            try {
+                perform(MockMvcRequestBuilders.post(REST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(userHttpBasic(admin))
+                        .content(jsonWithPassword(user, user.getPassword())))
+                        .andExpect(status().isUnprocessableEntity());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+        User newUser = getNew();
+        newUser.setCaloriesPerDay(9);
+        consumer.accept(newUser);
+        User newUser2 = getNew();
+        newUser2.setEmail("test_failed_email.ru");
+        consumer.accept(newUser2);
     }
 
     @Test
