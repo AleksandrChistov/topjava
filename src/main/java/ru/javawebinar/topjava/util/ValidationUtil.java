@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.util;
 
 
+import org.springframework.context.MessageSource;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.BindingResult;
@@ -9,12 +10,18 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.*;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ValidationUtil {
 
     private static final Validator validator;
+
+    private static final Map<String, String[]> CONSTRAINS_MAP = Map.of(
+            "users_unique_email_idx", new String[]{"exception.duplicate", "email"},
+            "meal_unique_user_datetime_idx", new String[]{"exception.duplicate", "dateTime"});
 
     static {
         //  From Javadoc: implementations are thread-safe and instances are typically cached and reused.
@@ -74,6 +81,16 @@ public class ValidationUtil {
     public static Throwable getRootCause(@NonNull Throwable t) {
         Throwable rootCause = NestedExceptionUtils.getRootCause(t);
         return rootCause != null ? rootCause : t;
+    }
+
+    @NonNull
+    public static String getMessageFromConstraintOrDefault(@NonNull String message, MessageSource messageSource) {
+        for (Map.Entry<String, String[]> entry : CONSTRAINS_MAP.entrySet()) {
+            if (message.toLowerCase().contains(entry.getKey())) {
+                return messageSource.getMessage(entry.getValue()[0], new Object[]{entry.getValue()[1]}, Locale.getDefault());
+            }
+        }
+        return message;
     }
 
     public static String getErrorMessage(BindingResult result) {
