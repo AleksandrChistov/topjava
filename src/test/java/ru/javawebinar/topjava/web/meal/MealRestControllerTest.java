@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -14,6 +16,7 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.function.Consumer;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -144,6 +147,19 @@ class MealRestControllerTest extends AbstractControllerTest {
         Meal newMeal3 = getNew();
         newMeal3.setDateTime(null);
         consumer.accept(newMeal3);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createWithLocationDuplicateException() throws Exception {
+        Meal newMeal = getNew();
+        newMeal.setDateTime(meal1.getDateTime());
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(user))
+                .content(JsonUtil.writeValue(newMeal)))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("Пользователь с таким dateTime уже существует")));
     }
 
     @Test
