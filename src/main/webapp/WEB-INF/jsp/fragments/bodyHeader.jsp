@@ -26,5 +26,29 @@
                 </button>
             </form:form>
         </sec:authorize>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <button class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        ${pageContext.response.locale}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=en">English</a>
+                        <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=ru">Русский</a>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                ${pageContext.response.locale}
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=en">English</a>
+                <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=ru">Русский</a>
+            </div>
+        </div>
     </div>
 </nav>
