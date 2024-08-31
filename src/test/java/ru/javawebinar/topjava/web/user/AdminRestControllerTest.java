@@ -7,12 +7,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -103,23 +105,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void updateWithException() throws Exception {
-        Consumer<User> consumer = user -> {
-            try {
-                perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(userHttpBasic(admin))
-                        .content(jsonWithPassword(user, user.getPassword())))
-                        .andExpect(status().isUnprocessableEntity());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-        User updated = getUpdated();
-        updated.setCaloriesPerDay(9);
-        consumer.accept(updated);
-        User updated2 = getUpdated();
-        updated2.setEmail("test_failed_email.ru");
-        consumer.accept(updated2);
+        User dummy = new User(USER_ID, "", "", "", 0, false, new Date(), Collections.singleton(Role.USER));
+        perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(dummy, dummy.getPassword())))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
@@ -153,23 +144,12 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
     @Test
     void createWithLocationWithException() throws Exception {
-        Consumer<User> consumer = user -> {
-            try {
-                perform(MockMvcRequestBuilders.post(REST_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(userHttpBasic(admin))
-                        .content(jsonWithPassword(user, user.getPassword())))
-                        .andExpect(status().isUnprocessableEntity());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        };
-        User newUser = getNew();
-        newUser.setCaloriesPerDay(9);
-        consumer.accept(newUser);
-        User newUser2 = getNew();
-        newUser2.setEmail("test_failed_email.ru");
-        consumer.accept(newUser2);
+        User dummy = new User(null, "", "", "", 0, false, new Date(), Collections.singleton(Role.USER));
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(jsonWithPassword(dummy, dummy.getPassword())))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
