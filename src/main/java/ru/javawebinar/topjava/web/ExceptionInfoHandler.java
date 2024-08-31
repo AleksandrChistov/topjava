@@ -9,6 +9,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -40,6 +41,13 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND);
     }
 
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo bindError(HttpServletRequest req, BindException e) {
+        String[] details = ValidationUtil.getErrorMessages(e.getBindingResult());
+        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND, details);
+    }
+
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
@@ -48,7 +56,7 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public ErrorInfo validationError(HttpServletRequest req, Exception e) {
+    public ErrorInfo validationError(HttpServletRequest req, BindException e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
@@ -59,14 +67,19 @@ public class ExceptionInfoHandler {
     }
 
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
+    private ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String... details) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
         if (logException) {
             log.error(errorType + " at request " + req.getRequestURL(), rootCause);
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        String message = ValidationUtil.getMessageFromConstraintOrDefault(rootCause.toString(), messageSource);
-        return new ErrorInfo(req.getRequestURL(), errorType, message);
+        return new ErrorInfo(
+                req.getRequestURL(),
+                errorType,
+                details.length > 0 ?
+                        details :
+                        new String[]{ValidationUtil.getMessageFromConstraintOrDefault(rootCause.toString(), messageSource)}
+        );
     }
 }

@@ -46,9 +46,12 @@
                 ${pageContext.response.locale}
             </a>
             <div class="dropdown-menu">
-                <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=en">English</a>
-                <a class="dropdown-item" href="${pageContext.request.contextPath}?lang=ru">Русский</a>
+                <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?lang=en">English</a>
+                <a class="dropdown-item" href="${requestScope['javax.servlet.forward.request_uri']}?lang=ru">Русский</a>
             </div>
         </div>
     </div>
 </nav>
+<script type="text/javascript">
+    const currentLocale = "${pageContext.response.locale}";
+</script>

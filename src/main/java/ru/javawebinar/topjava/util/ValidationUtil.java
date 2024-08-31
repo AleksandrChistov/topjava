@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.util;
 
 
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.validation.BindingResult;
@@ -10,18 +11,18 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.*;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ValidationUtil {
 
     private static final Validator validator;
+    public static final String DUPLICATE_EMAIL_MESSAGE_CODE = "exception.duplicate.email";
+    public static final String DUPLICATE_DATETIME_MESSAGE_CODE = "exception.duplicate.dateTime";
 
-    private static final Map<String, String[]> CONSTRAINS_MAP = Map.of(
-            "users_unique_email_idx", new String[]{"exception.duplicate", "email"},
-            "meal_unique_user_datetime_idx", new String[]{"exception.duplicate", "dateTime"});
+    private static final Map<String, String> CONSTRAINS_MAP = Map.of(
+            "users_unique_email_idx", DUPLICATE_EMAIL_MESSAGE_CODE,
+            "meal_unique_user_datetime_idx", DUPLICATE_DATETIME_MESSAGE_CODE);
 
     static {
         //  From Javadoc: implementations are thread-safe and instances are typically cached and reused.
@@ -85,17 +86,17 @@ public class ValidationUtil {
 
     @NonNull
     public static String getMessageFromConstraintOrDefault(@NonNull String message, MessageSource messageSource) {
-        for (Map.Entry<String, String[]> entry : CONSTRAINS_MAP.entrySet()) {
+        for (Map.Entry<String, String> entry : CONSTRAINS_MAP.entrySet()) {
             if (message.toLowerCase().contains(entry.getKey())) {
-                return messageSource.getMessage(entry.getValue()[0], new Object[]{entry.getValue()[1]}, Locale.getDefault());
+                return messageSource.getMessage(entry.getValue(), null, LocaleContextHolder.getLocale());
             }
         }
         return message;
     }
 
-    public static String getErrorMessage(BindingResult result) {
+    public static String[] getErrorMessages(BindingResult result) {
         return result.getFieldErrors().stream()
                 .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                .collect(Collectors.joining("<br>"));
+                .toArray(String[]::new);
     }
 }

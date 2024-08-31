@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -11,6 +12,8 @@ import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.validation.Valid;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.DUPLICATE_EMAIL_MESSAGE_CODE;
 
 @Controller
 @RequestMapping("/profile")
@@ -26,10 +29,15 @@ public class ProfileUIController extends AbstractUserController {
         if (result.hasErrors()) {
             return "profile";
         } else {
-            super.update(userTo, SecurityUtil.authUserId());
-            SecurityUtil.get().setTo(userTo);
-            status.setComplete();
-            return "redirect:/meals";
+            try {
+                super.update(userTo, SecurityUtil.authUserId());
+                SecurityUtil.get().setTo(userTo);
+                status.setComplete();
+                return "redirect:/meals";
+            }  catch (DataIntegrityViolationException e) {
+                result.rejectValue("email", DUPLICATE_EMAIL_MESSAGE_CODE);
+                return "profile";
+            }
         }
     }
 
@@ -46,9 +54,14 @@ public class ProfileUIController extends AbstractUserController {
             model.addAttribute("register", true);
             return "profile";
         } else {
-            super.create(userTo);
-            status.setComplete();
-            return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
+            try {
+                super.create(userTo);
+                status.setComplete();
+                return "redirect:/login?message=app.registered&username=" + userTo.getEmail();
+            } catch (DataIntegrityViolationException e) {
+                result.rejectValue("email", DUPLICATE_EMAIL_MESSAGE_CODE);
+                return "profile";
+            }
         }
     }
 }
