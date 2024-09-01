@@ -54,7 +54,8 @@ class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + ADMIN_MEAL_ID)
                 .with(userHttpBasic(user)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().json("{details: [\"Not found entity with id=100010\"]}"));
     }
 
     @Test
@@ -129,7 +130,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(newMeal)))
                 .andExpect(status().isConflict())
-                .andExpect(content().string(containsString("Пользователь с такой датой/временем уже существует")));
+                .andExpect(content().string(containsString("Еда с такой датой/временем уже существует")));
     }
 
     @Test

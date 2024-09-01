@@ -35,9 +35,6 @@ public class AdminUIController extends AbstractUserController {
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void createOrUpdate(@Valid UserTo userTo) {
-//        if (result.hasErrors()) {
-//            throw new IllegalRequestDataException(ValidationUtil.getErrorMessages(result));
-//        }
         if (userTo.isNew()) {
             super.create(userTo);
         } else {
