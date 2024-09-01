@@ -78,7 +78,7 @@ public class ExceptionInfoHandler {
                 errorType,
                 details.length > 0 ?
                         details :
-                        new String[]{ValidationUtil.getMessageFromConstraintOrDefault(rootCause.toString(), messageSource)}
+                        new String[]{ValidationUtil.getMessageFromConstraintOrDefault(rootCause.getMessage(), messageSource)}
         );
     }
 }
